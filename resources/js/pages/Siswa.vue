@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm, router } from '@inertiajs/vue3';
@@ -80,6 +80,20 @@ const handleDownloadPdf = () => {
     link.click();
     document.body.removeChild(link);
 };
+
+const handleKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+        showModal.value = false;
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleKeydown);
+});
 </script>
 
 <template>
@@ -87,9 +101,9 @@ const handleDownloadPdf = () => {
         <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4 flex flex-col gap-4">
             <h2>Data Siswa</h2>
-            <div class="flex gap-2">
-                <button @click="handleDownloadPdf" class="btn">Download PDF</button>
-                <button @click="openCreateModal" class="btn bg-blue-500 text-white">Tambah Siswa</button>
+            <div class="flex gap-4">
+                <button @click="handleDownloadPdf" class="btn text-red-500 p-2 hover:ring-2 active:bg-red-500/50 hover:ring-red-500 hover:rounded-sm hover:cursor-pointer">Download PDF</button>
+                <button @click="openCreateModal" class="btn bg-blue-500 text-white p-2 rounded-sm hover:cursor-pointer hover:bg-blue-800">Tambah Siswa</button>
             </div>
 
             <input v-model="search" @input="searchSiswa" placeholder="Cari siswa..." class="border p-2 rounded" />
@@ -115,8 +129,8 @@ const handleDownloadPdf = () => {
                         <td>{{ s.alamat }}</td>
                         <td>{{ s.telepon }}</td>
                         <td>
-                            <button @click="openEditModal(s)" class="text-blue-500">Edit</button>
-                            <button @click="destroy(s.id)" class="text-red-500 ml-2">Hapus</button>
+                            <button @click="openEditModal(s)" class="text-blue-500 hover:cursor-pointer">Edit</button>
+                            <button @click="destroy(s.id)" class="text-red-500 ml-2 hover:cursor-pointer">Hapus</button>
                         </td>
                     </tr>
                 </tbody>
@@ -126,6 +140,7 @@ const handleDownloadPdf = () => {
         <div
             v-if="showModal"
             class="fixed inset-0 z-50 bg-black/30 backdrop-blur-md flex items-center justify-center"
+            @click.self="showModal = false"
             >
             <!-- class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center" -->
             <div
@@ -170,15 +185,15 @@ const handleDownloadPdf = () => {
                         <button
                             type="button"
                             @click="showModal = false"
-                            class="bg-gray-200 dark:bg-gray-600 px-4 py-2 rounded text-black dark:text-white"
+                            class="bg-gray-200 dark:bg-gray-600 px-4 py-2 rounded text-black dark:text-white hover:cursor-pointer"
                             >
                             Batal
                         </button>
                             <button
                                 type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded hover:cursor-pointer"
                                 >
-                                {{ isEditing ? 'Ubah' : 'Simpan' }}
+                                {{ isEditing ? 'Ubah' : 'Tambah' }}
                             </button>
                     </div>
                 </form>
