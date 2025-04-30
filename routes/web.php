@@ -8,8 +8,12 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/anjay', function () {
-    return Inertia::render('anjay');
+    return inertia::render('anjay');
 })->name('anjay');
+
+Route::get('/siswa', function () {
+    return inertia::render('Siswa');
+})->name('siswa');
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');

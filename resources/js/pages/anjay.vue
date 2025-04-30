@@ -18,6 +18,7 @@ const user = computed(() => page.props.auth.user)
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
 
+    <p class="dark:text-red-500">dasdsa</p>
     <h1 class="text-3xl font-bold ">Anjay</h1>
     <h1 class="text-3xl font-bold ">halo, {{ user.name }}</h1>
     <p>{{ appearance }}</p>
@@ -25,7 +26,6 @@ const user = computed(() => page.props.auth.user)
     <div class="flex justify-betweeen">
         <Button @click="changeAppearance('dark')">Dark</Button>
         <Button @click="changeAppearance('light')">Light</Button>
-        <Button @click="$route('welcome')">welcome </Button>
     </div>
 
 
