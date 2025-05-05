@@ -11,8 +11,9 @@ class SiswaController extends Controller {
     public function index(Request $request) {
         $siswa = Siswa::when($request->search, function ($query, $search) {
             return $query->where('nama', 'like', "%{$search}%")
-   ->orWhere('nisn', 'like', "%{$search}%");
-        })->get();
+               ->orWhere('nisn', 'like', "%{$search}%");
+        // })->get();
+        })->paginate(10)->withQueryString();
 
         return Inertia::render('Siswa', ['siswa' => $siswa]);
     }
@@ -53,14 +54,25 @@ class SiswaController extends Controller {
         return redirect()->route('siswa.index')->with('message', 'Siswa dihapus.');
     }
 
-    public function report() {
-        $siswa = Siswa::all();
-        $pdf = PDF::loadView('report.siswa', ['siswa' => $siswa]);
-        return $pdf->download('laporan_siswa.pdf');
+    public function report(Request $request) {
+        // $siswa = Siswa::all();
+        // $pdf = PDF::loadView('report.siswa', ['siswa' => $siswa]);
+        // return $pdf->download('laporan_siswa.pdf');
         // return $pdf;
         // return response()->streamDownload(function () use ($pdf) {
         //     echo $pdf->output();
         // }, 'laporan_siswa.pdf');
+        $query = Siswa::query();
+
+        if ($request->search) {
+            $query->where('nama', 'like', '%' . $request->search . '%')
+                  ->orWhere('nisn', 'like', '%' . $request->search . '%');
+        }
+
+        $siswa = $query->paginate(10, ['*'], 'page', $request->page ?? 1);
+
+        $pdf = PDF::loadView('report.siswa', ['siswa' => $siswa]);
+        return $pdf->download('laporan_siswa.pdf');
     }
 
 

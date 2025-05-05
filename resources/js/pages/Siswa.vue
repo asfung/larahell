@@ -10,6 +10,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 defineProps<{
     siswa: Array<any>;
+    link: Array<any>;
 }>();
 
 const form = useForm({
@@ -73,12 +74,26 @@ const searchSiswa = () => {
 };
 
 const handleDownloadPdf = () => {
+    // const link = document.createElement('a');
+    // link.href = route('siswa.report');
+    // link.setAttribute('download', 'laporan.pdf');
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+
+    const url = new URL(route('siswa.report'), window.location.origin);
+    if (search.value) url.searchParams.set('search', search.value);
+
+    const currentPage = new URLSearchParams(window.location.search).get('page');
+    if (currentPage) url.searchParams.set('page', currentPage);
+
     const link = document.createElement('a');
-    link.href = route('siswa.report');
+    link.href = url.toString();
     link.setAttribute('download', 'laporan.pdf');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
@@ -121,7 +136,7 @@ onBeforeUnmount(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="s in siswa" :key="s.id">
+                    <tr v-for="s in siswa.data" :key="s.id">
                         <td>{{ s.nisn }}</td>
                         <td>{{ s.nama }}</td>
                         <td>{{ s.tempat_lahir }}</td>
@@ -135,6 +150,20 @@ onBeforeUnmount(() => {
                     </tr>
                 </tbody>
             </table>
+            <div class="mt-4 flex gap-2 flex-wrap">
+                <button
+                    v-for="link in siswa.links"
+                    :key="link.label"
+                    v-html="link.label"
+                    :disabled="!link.url"
+                    @click="link.url && router.visit(link.url, { preserveState: true })"
+                    class="px-3 py-1 border rounded"
+                    :class="{
+                        'bg-blue-500 text-white': link.active,
+                        'text-gray-500': !link.url,
+                    }"
+                />
+            </div>
         </div>
 
         <div
